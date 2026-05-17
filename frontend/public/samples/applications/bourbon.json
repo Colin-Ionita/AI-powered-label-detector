@@ -1,0 +1,12 @@
+{
+  "applicationId": "COLA-DEMO-001",
+  "beverageType": "DISTILLED_SPIRITS",
+  "brandName": "Old Tom Distillery",
+  "classOrType": "Kentucky Straight Bourbon Whiskey",
+  "alcoholContent": "45% ABV (90 Proof)",
+  "netContents": "750 mL",
+  "responsiblePartyName": "Old Tom Distillery",
+  "responsiblePartyAddress": "Louisville, KY",
+  "countryOfOrigin": "",
+  "imported": false
+}

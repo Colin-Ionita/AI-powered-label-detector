@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 300MB
+
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}
+  batch:
+    max-size: ${MAX_BATCH_SIZE:300}
+    worker-concurrency: ${WORKER_CONCURRENCY:4}
+  ocr:
+    provider: ${OCR_PROVIDER:mock}
+    google-vision:
+      api-key: ${GOOGLE_VISION_API_KEY:}
+      endpoint: ${GOOGLE_VISION_ENDPOINT:https://vision.googleapis.com/v1/images:annotate}
+      timeout-ms: ${OCR_TIMEOUT_MS:10000}

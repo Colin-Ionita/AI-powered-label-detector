@@ -1,0 +1,12 @@
+{
+  "applicationId": "COLA-DEMO-002",
+  "beverageType": "DISTILLED_SPIRITS",
+  "brandName": "Stone's Throw",
+  "classOrType": "Straight Bourbon Whiskey",
+  "alcoholContent": "40% ABV (80 Proof)",
+  "netContents": "750 mL",
+  "responsiblePartyName": "Stone's Throw Distilling",
+  "responsiblePartyAddress": "Richmond, VA",
+  "countryOfOrigin": "",
+  "imported": false
+}

@@ -1,0 +1,19 @@
+.claude/
+.env
+.env.*
+!.env.example
+*.log
+*.tmp
+*.class
+
+Take-Home Project_*.docx
+Take-Home_Project_*.md
+reveiw.md
+
+backend/target/
+backend/server.log
+backend/server.err.log
+frontend/node_modules/
+frontend/dist/
+frontend/vite.log
+frontend/vite.err.log
