@@ -9,6 +9,11 @@
 Take-Home Project_*.docx
 Take-Home_Project_*.md
 reveiw.md
+response-email.md
+email.md
+opencode.json
+/*.PNG
+/*.png
 
 backend/target/
 backend/server.log
