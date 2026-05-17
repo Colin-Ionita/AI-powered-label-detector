@@ -91,6 +91,9 @@ public class VerificationService {
         if (ocr.confidence() < 50) {
             return VerificationStatus.NEEDS_REVIEW;
         }
+        if (criticalFailureCount(fields, warning) >= 2) {
+            return VerificationStatus.UNREADABLE;
+        }
         boolean hasFailure = fields.stream().anyMatch(field -> field.status() == MatchStatus.MISMATCH || field.status() == MatchStatus.MISSING)
             || warning.status() == MatchStatus.MISMATCH
             || warning.status() == MatchStatus.MISSING;
@@ -100,6 +103,17 @@ public class VerificationService {
         boolean needsReview = fields.stream().anyMatch(field -> field.status() == MatchStatus.LOW_CONFIDENCE)
             || warning.status() == MatchStatus.LOW_CONFIDENCE;
         return needsReview ? VerificationStatus.NEEDS_REVIEW : VerificationStatus.PASS;
+    }
+
+    private long criticalFailureCount(List<FieldMatchResult> fields, GovernmentWarningResult warning) {
+        long fieldFailures = fields.stream()
+            .filter(field -> field.fieldKey().equals("brandName")
+                || field.fieldKey().equals("alcoholContent")
+                || field.fieldKey().equals("netContents"))
+            .filter(field -> field.status() == MatchStatus.MISMATCH || field.status() == MatchStatus.MISSING)
+            .count();
+        boolean warningFailure = warning.status() == MatchStatus.MISMATCH || warning.status() == MatchStatus.MISSING;
+        return fieldFailures + (warningFailure ? 1 : 0);
     }
 
     private List<String> reviewReasons(List<FieldMatchResult> fields, GovernmentWarningResult warning, OcrResult ocr) {

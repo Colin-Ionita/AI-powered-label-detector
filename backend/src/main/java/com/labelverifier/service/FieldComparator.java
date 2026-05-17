@@ -25,6 +25,9 @@ public class FieldComparator {
         if (isBlank(extracted)) {
             return new FieldMatchResult(key, display, expected, extracted, MatchStatus.MISSING, 0, "Field was not found in OCR text.");
         }
+        if (key.equals("responsiblePartyAddress") && containsNormalized(extracted, expected)) {
+            return new FieldMatchResult(key, display, expected, extracted, MatchStatus.MATCH, confidence, "Expected address appears in the extracted responsible party line.");
+        }
         double similarity = normalizationService.similarity(expected, extracted);
         MatchStatus status = similarity >= threshold ? MatchStatus.MATCH : MatchStatus.MISMATCH;
         String reason = status == MatchStatus.MATCH
@@ -109,6 +112,12 @@ public class FieldComparator {
 
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private boolean containsNormalized(String larger, String smaller) {
+        String normalizedLarger = normalizationService.normalizeText(larger);
+        String normalizedSmaller = normalizationService.normalizeText(smaller);
+        return !normalizedSmaller.isBlank() && normalizedLarger.contains(normalizedSmaller);
     }
 
     private String round(double value) {

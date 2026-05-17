@@ -26,7 +26,7 @@ public class NormalizationService {
         if (a.isBlank() || b.isBlank()) {
             return 0;
         }
-        if (a.equals(b) || a.contains(b) || b.contains(a)) {
+        if (a.equals(b)) {
             return 1;
         }
         int distance = levenshtein(a, b);

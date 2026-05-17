@@ -27,6 +27,16 @@ class GovernmentWarningValidatorTest {
     }
 
     @Test
+    void truncatedWarningFailsEvenWhenItStartsCorrectly() {
+        var truncated = "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects.";
+
+        var result = demoValidator.validate(truncated, 95, true);
+
+        assertThat(result.status()).isEqualTo(MatchStatus.MISMATCH);
+        assertThat(result.reason()).isEqualTo("BODY_TEXT_CHANGED");
+    }
+
+    @Test
     void unverifiableBoldNeedsReview() {
         var result = strictValidator.validate(CANONICAL, 95, false);
 

@@ -33,8 +33,9 @@ public class GovernmentWarningValidator {
             }
             return new GovernmentWarningResult(MatchStatus.MISMATCH, confidence, extractedWarning, "Government warning heading is missing or malformed.");
         }
-        double similarity = normalizationService.similarity(canonicalWarning, extractedWarning);
-        if (similarity < 0.95) {
+        String normalizedCanonical = normalizationService.normalizeText(canonicalWarning);
+        String normalizedExtracted = normalizationService.normalizeText(extractedWarning);
+        if (!normalizedExtracted.contains(normalizedCanonical)) {
             return new GovernmentWarningResult(MatchStatus.MISMATCH, confidence, extractedWarning, "BODY_TEXT_CHANGED");
         }
         if (!headingBoldDetected && requireBoldMetadata) {

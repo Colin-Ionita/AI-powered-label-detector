@@ -28,4 +28,18 @@ class FieldComparatorTest {
 
         assertThat(result.status()).isEqualTo(MatchStatus.MATCH);
     }
+
+    @Test
+    void partialBrandTextDoesNotMatchFullBrand() {
+        var result = comparator.text("brandName", "Brand name", "Old Tom Distillery", "LD TOM", 96, 0.86);
+
+        assertThat(result.status()).isEqualTo(MatchStatus.MISMATCH);
+    }
+
+    @Test
+    void addressCanMatchInsideResponsiblePartyLine() {
+        var result = comparator.text("responsiblePartyAddress", "Address", "Louisville, KY", "Bottled by Old Tom Distillery, Louisville, KY", 96, 0.60);
+
+        assertThat(result.status()).isEqualTo(MatchStatus.MATCH);
+    }
 }
