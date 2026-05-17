@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: alcohol-label-verifier-api
+    runtime: docker
+    rootDir: backend
+    plan: free
+    envVars:
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: OCR_PROVIDER
+        value: google-vision
+      - key: GOOGLE_VISION_API_KEY
+        sync: false
+      - key: MAX_BATCH_SIZE
+        value: 300
+      - key: WORKER_CONCURRENCY
+        value: 4
+      - key: OCR_TIMEOUT_MS
+        value: 10000

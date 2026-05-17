@@ -123,16 +123,18 @@ Backend on Render:
 
 - Root directory: `backend`
 - Environment: Docker
+- Blueprint file: `render.yaml` at the repository root can create the backend service.
 - Environment variables:
   - `ALLOWED_ORIGINS`: deployed frontend URL
-  - `OCR_PROVIDER`: `mock` or `google-vision`
-  - `GOOGLE_VISION_API_KEY`: only for `google-vision`
+  - `OCR_PROVIDER`: `google-vision` for real OCR, or `mock` for credential-free demo mode
+  - `GOOGLE_VISION_API_KEY`: required for `google-vision`
 
 Frontend on Vercel or Netlify:
 
 - Root directory: `frontend`
 - Build command: `npm run build`
 - Publish directory: `dist`
+- Config files: `frontend/vercel.json` and `frontend/netlify.toml`
 - Environment variables:
   - `VITE_API_BASE_URL`: deployed backend base URL, for example `https://your-service.onrender.com`
 
