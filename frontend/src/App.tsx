@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getBatchResults, startBatch, verifySingleLabel } from './api/labelVerificationApi';
 import { BatchResults } from './components/BatchResults';
 import { FileDropzone } from './components/FileDropzone';
@@ -65,6 +65,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeSample, setActiveSample] = useState<ScenarioKey | 'batch' | null>(null);
+  const resultsRef = useRef<HTMLElement>(null);
 
   const canSubmit = useMemo(() => {
     return files.length > 0 && applicationData.brandName.trim() !== '' && applicationData.alcoholContent.trim() !== '';
@@ -72,15 +73,31 @@ function App() {
 
   useEffect(() => {
     if (!batchId || batchResult?.status.complete) return;
+    let consecutiveFailures = 0;
     const id = window.setInterval(async () => {
       try {
-        setBatchResult(await getBatchResults(batchId));
+        const nextResult = await getBatchResults(batchId);
+        consecutiveFailures = 0;
+        setError(null);
+        setBatchResult(nextResult);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Could not refresh batch results.');
+        consecutiveFailures += 1;
+        if (consecutiveFailures >= 5) {
+          window.clearInterval(id);
+          setError('Lost connection to the verifier. Refresh or submit the batch again.');
+        } else {
+          setError(err instanceof Error ? err.message : 'Could not refresh batch results.');
+        }
       }
     }, 1200);
     return () => window.clearInterval(id);
   }, [batchId, batchResult?.status.complete]);
+
+  useEffect(() => {
+    if (singleResult || batchResult?.status.complete || error) {
+      resultsRef.current?.focus();
+    }
+  }, [singleResult, batchResult?.status.complete, error]);
 
   function updateField<K extends keyof ApplicationDataRequest>(key: K, value: ApplicationDataRequest[K]) {
     setApplicationData((current) => ({ ...current, [key]: value }));
@@ -286,7 +303,7 @@ function App() {
             {!canSubmit && <p className="form-hint">Choose at least one image and fill in brand name and alcohol content.</p>}
           </form>
 
-          <section className="output-panel">
+          <section className="output-panel" ref={resultsRef} tabIndex={-1} aria-live="polite">
             {error && <div className="error" role="alert">{error}</div>}
             {!error && !singleResult && !batchResult && (
               <div className="empty-state">

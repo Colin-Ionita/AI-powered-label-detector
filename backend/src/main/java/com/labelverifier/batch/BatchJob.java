@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BatchJob {
     private final String batchId;
     private final int total;
+    private final long createdAtMs;
     private final AtomicInteger processed = new AtomicInteger();
     private final AtomicInteger pass = new AtomicInteger();
     private final AtomicInteger fail = new AtomicInteger();
@@ -19,6 +20,7 @@ public class BatchJob {
     public BatchJob(String batchId, int total) {
         this.batchId = batchId;
         this.total = total;
+        this.createdAtMs = System.currentTimeMillis();
     }
 
     public void addResult(VerificationResponse result) {
@@ -41,6 +43,10 @@ public class BatchJob {
 
     public int total() {
         return total;
+    }
+
+    public long createdAtMs() {
+        return createdAtMs;
     }
 
     public int processed() {

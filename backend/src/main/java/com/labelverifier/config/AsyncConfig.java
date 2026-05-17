@@ -15,6 +15,8 @@ public class AsyncConfig {
         executor.setMaxPoolSize(Math.max(concurrency, concurrency * 2));
         executor.setQueueCapacity(500);
         executor.setThreadNamePrefix("batch-verifier-");
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(30);
         executor.initialize();
         return executor;
     }

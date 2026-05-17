@@ -1,12 +1,12 @@
 # AI-Powered Alcohol Label Verification App
 
-Standalone prototype for verifying alcohol label artwork against expected application data. It implements the plan in `implementation_plan.md` with a React frontend, Spring Boot backend, deterministic mock OCR/extraction, government warning validation, and in-memory batch processing.
+Standalone prototype for verifying alcohol label artwork against expected application data. It uses a React frontend, Spring Boot backend, deterministic mock OCR/extraction, optional Google Vision OCR, government warning validation, and in-memory batch processing.
 
 Source repository: https://github.com/Colin-Ionita/AI-powered-label-detector
 
-Deployed frontend: pending
+Deployed frontend: https://ai-powered-label-detector.vercel.app/
 
-Deployed backend health check: pending
+Deployed backend health check: https://ai-powered-label-detector.onrender.com/api/health
 
 ## What Works
 
@@ -74,7 +74,7 @@ Sample assets live in `frontend/public/samples/`:
 - `batch/*.png` - five-image batch subset.
 - `applications/*.json` - per-scenario application data (`bourbon`, `stone`, `import`).
 
-Prompt guidance and the Java generator are in the repo root under `sample_image_prompts.md` and `samples/SampleLabelGenerator.java`.
+The Java generator is in the repo root under `samples/SampleLabelGenerator.java`.
 
 To regenerate the deterministic sample PNGs served by the app:
 
@@ -102,6 +102,8 @@ Backend environment variables:
 - `ALLOWED_ORIGINS`: defaults to `http://localhost:5173`
 - `MAX_BATCH_SIZE`: defaults to `300`
 - `WORKER_CONCURRENCY`: defaults to `4`
+- `BATCH_RETENTION_MS`: defaults to `3600000` (one hour)
+- `BATCH_CLEANUP_RATE_MS`: defaults to `600000` (ten minutes)
 - `OCR_PROVIDER`: defaults to `mock`
 - `GOOGLE_VISION_API_KEY`: required only when `OCR_PROVIDER=google-vision`
 - `GOOGLE_VISION_ENDPOINT`: defaults to `https://vision.googleapis.com/v1/images:annotate`
@@ -126,7 +128,7 @@ Backend on Render:
 - Environment: Docker
 - Blueprint file: `render.yaml` at the repository root can create the backend service.
 - Environment variables:
-  - `ALLOWED_ORIGINS`: deployed frontend URL
+  - `ALLOWED_ORIGINS`: deployed frontend URL; this must be set in Render for the deployed frontend to pass CORS
   - `OCR_PROVIDER`: `google-vision` for real OCR, or `mock` for credential-free demo mode
   - `GOOGLE_VISION_API_KEY`: required for `google-vision`
   - `REQUIRE_WARNING_BOLD_METADATA`: `false` for the hosted demo, `true` for stricter review behavior
@@ -159,7 +161,8 @@ npm run build
 - Mock OCR is filename-driven, so arbitrary uploaded images produce the default happy-path OCR text unless their filename matches a sample scenario. The bundled sample PNGs are real image files with exact rendered label text, ready for a future real OCR provider.
 - Google Vision OCR is available as an optional provider, but it requires a Google Cloud API key and does not reliably expose text weight. The demo treats canonical uppercase warning text as passing unless `REQUIRE_WARNING_BOLD_METADATA=true`.
 - Uploaded images are processed in memory and are not persisted.
-- Batch state is in memory and is lost on backend restart.
+- Batch state is in memory, expires after the configured retention window, and is lost on backend restart.
 - Batch verification currently uses one application data record for all files in the batch. Mixed application records would need a manifest or per-file application payload.
+- The API accepts up to 10 MB per file. The hosted service also has platform request-size limits, so very large 300-file batches should be compressed or split.
 - Bold detection is represented by mock metadata. Real OCR providers often cannot reliably confirm text weight, so real integrations should return `NEEDS_REVIEW` when bold cannot be verified.
 - This is a decision-support prototype, not a complete legal compliance engine.
