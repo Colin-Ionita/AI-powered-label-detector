@@ -17,3 +17,5 @@ services:
         value: 4
       - key: OCR_TIMEOUT_MS
         value: 10000
+      - key: REQUIRE_WARNING_BOLD_METADATA
+        value: false

@@ -106,12 +106,13 @@ Backend environment variables:
 - `GOOGLE_VISION_API_KEY`: required only when `OCR_PROVIDER=google-vision`
 - `GOOGLE_VISION_ENDPOINT`: defaults to `https://vision.googleapis.com/v1/images:annotate`
 - `OCR_TIMEOUT_MS`: defaults to `10000`
+- `REQUIRE_WARNING_BOLD_METADATA`: defaults to `false`; set to `true` if missing OCR bold metadata should force `NEEDS_REVIEW`
 
 Frontend environment variables:
 
 - `VITE_API_BASE_URL`: leave empty for local Vite proxying, or set to the deployed backend base URL for split deployments.
 
-The default `mock` OCR provider is deterministic and credential-free for evaluators. Set `OCR_PROVIDER=google-vision` and provide `GOOGLE_VISION_API_KEY` to use Google Cloud Vision `DOCUMENT_TEXT_DETECTION` for real uploaded images. Google Vision does not expose reliable bold-type detection, so correct warning text may return `NEEDS_REVIEW` when OCR cannot verify the bold `GOVERNMENT WARNING:` heading.
+The default `mock` OCR provider is deterministic and credential-free for evaluators. Set `OCR_PROVIDER=google-vision` and provide `GOOGLE_VISION_API_KEY` to use Google Cloud Vision `DOCUMENT_TEXT_DETECTION` for real uploaded images. Google Vision does not expose reliable bold-type detection, so the hosted demo defaults `REQUIRE_WARNING_BOLD_METADATA=false`: canonical uppercase warning text can pass, while heading case and wording violations still fail. Set `REQUIRE_WARNING_BOLD_METADATA=true` for a stricter production posture.
 
 Other real OCR/LLM integrations can be added behind `OcrProvider` and `FieldExtractionProvider`.
 
@@ -128,6 +129,7 @@ Backend on Render:
   - `ALLOWED_ORIGINS`: deployed frontend URL
   - `OCR_PROVIDER`: `google-vision` for real OCR, or `mock` for credential-free demo mode
   - `GOOGLE_VISION_API_KEY`: required for `google-vision`
+  - `REQUIRE_WARNING_BOLD_METADATA`: `false` for the hosted demo, `true` for stricter review behavior
 
 Frontend on Vercel or Netlify:
 
@@ -155,7 +157,7 @@ npm run build
 ## Assumptions And Limitations
 
 - Mock OCR is filename-driven, so arbitrary uploaded images produce the default happy-path OCR text unless their filename matches a sample scenario. The bundled sample PNGs are real image files with exact rendered label text, ready for a future real OCR provider.
-- Google Vision OCR is available as an optional provider, but it requires a Google Cloud API key and may return `NEEDS_REVIEW` for warning boldness because OCR does not reliably expose text weight.
+- Google Vision OCR is available as an optional provider, but it requires a Google Cloud API key and does not reliably expose text weight. The demo treats canonical uppercase warning text as passing unless `REQUIRE_WARNING_BOLD_METADATA=true`.
 - Uploaded images are processed in memory and are not persisted.
 - Batch state is in memory and is lost on backend restart.
 - Batch verification currently uses one application data record for all files in the batch. Mixed application records would need a manifest or per-file application payload.

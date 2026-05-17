@@ -19,3 +19,5 @@ app:
       api-key: ${GOOGLE_VISION_API_KEY:}
       endpoint: ${GOOGLE_VISION_ENDPOINT:https://vision.googleapis.com/v1/images:annotate}
       timeout-ms: ${OCR_TIMEOUT_MS:10000}
+  warning:
+    require-bold-metadata: ${REQUIRE_WARNING_BOLD_METADATA:false}
