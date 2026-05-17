@@ -5,6 +5,13 @@ type Props = {
   fields: FieldMatchResult[];
 };
 
+function displayValue(field: FieldMatchResult, value: string | null, emptyLabel: string) {
+  if (value) {
+    return value;
+  }
+  return field.status === 'NOT_APPLICABLE' ? 'Not applicable' : emptyLabel;
+}
+
 export function FieldComparisonTable({ fields }: Props) {
   return (
     <div className="table-wrap">
@@ -23,8 +30,8 @@ export function FieldComparisonTable({ fields }: Props) {
           {fields.map((field) => (
             <tr key={field.fieldKey}>
               <th scope="row">{field.displayName}</th>
-              <td>{field.expectedValue || 'Not supplied'}</td>
-              <td>{field.extractedValue || 'Not found'}</td>
+              <td>{displayValue(field, field.expectedValue, 'Not supplied')}</td>
+              <td>{displayValue(field, field.extractedValue, 'Not found')}</td>
               <td><StatusBadge status={field.status} /></td>
               <td>{field.confidence}%</td>
               <td>{field.reason}</td>
